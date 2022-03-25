@@ -3,6 +3,7 @@ import AppLoading from 'expo-app-loading'
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState } from 'react';
 import Navigator from './navigators';
+import { DBContext } from "./context";
 
 const FeelingSchema = {
   name: "Feeling",
@@ -16,12 +17,13 @@ const FeelingSchema = {
 
 export default function App() {
   const [ready, setReady] = useState(false)
+  const [realm, setRealm] = useState(null)
   const startLoading = async () => {
-    const realm = await Realm.open({
+    const connection = await Realm.open({
       path: "diaryapp",
       schema: [FeelingSchema]
     })
-    console.log("realm", realm)
+    setRealm(connection)
   }
   const onFinish = () => setReady(true)
   if (!ready) {
@@ -34,8 +36,10 @@ export default function App() {
     )
   }
   return (
-    <NavigationContainer>
-      <Navigator />
-    </NavigationContainer>
+    <DBContext.Provider value={realm}>
+      <NavigationContainer>
+        <Navigator />
+      </NavigationContainer>
+    </DBContext.Provider>
   );
 }

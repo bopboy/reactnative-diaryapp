@@ -6,7 +6,7 @@ const Stack = createNativeStackNavigator()
 
 const Navigator = () => (
     <Stack.Navigator
-        screenOptions={{ headerShown: false, presentation: "modal" }}
+        screenOptions={{ headerShown: true, presentation: "modal" }}
     >
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Write" component={Write} />

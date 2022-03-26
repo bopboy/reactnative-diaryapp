@@ -3,7 +3,11 @@ import styled from 'styled-components'
 import colors from '../colors'
 import { Ionicons } from '@expo/vector-icons'
 import { useDB } from '../context'
-import { FlatList } from 'react-native'
+import { FlatList, TouchableOpacity, LayoutAnimation, UIManager, Platform } from 'react-native'
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true)
+}
 
 const View = styled.View`
     flex: 1;
@@ -56,18 +60,19 @@ function Home({ navigation: { navigate } }) {
     useEffect(() => {
         const feelings = realm.objects("Feeling")
         setFeelings(feelings)
-        feelings.addListener(() => {
-            const feelings = realm.objects("Feeling")
-            setFeelings(feelings)
+        feelings.addListener((feelings, changes) => {
+            // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
+            LayoutAnimation.linear()
+            setFeelings(feelings.sorted("_id", true))
         })
         return () => { feelings.removeAllListeners() }
     }, [])
-    // useEffect(() => {
-    //     const feelings = realm.objects("Feeling")
-    //     // const happy = feelings.filtered("emotion = '😀'")
-    //     // console.log(happy)
-    // }, [])
-    console.log(feelings)
+    const onPress = (id) => {
+        realm.write(() => {
+            const feeling = realm.objectForPrimaryKey("Feeling", id)
+            realm.delete(feeling)
+        })
+    }
     return (
         <View>
             <Title>My Journal</Title>
@@ -77,10 +82,12 @@ function Home({ navigation: { navigate } }) {
                 ItemSeparatorComponent={Separator}
                 keyExtractor={feeling => feeling._id + ""}
                 renderItem={({ item }) => (
-                    <Record>
-                        <Emotion>{item.emotion}</Emotion>
-                        <Message>{item.message}</Message>
-                    </Record>
+                    <TouchableOpacity onPress={() => onPress(item._id)}>
+                        <Record>
+                            <Emotion>{item.emotion}</Emotion>
+                            <Message>{item.message}</Message>
+                        </Record>
+                    </TouchableOpacity>
                 )}
             />
             <Btn onPress={() => navigate("Write")}>

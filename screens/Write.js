@@ -55,7 +55,6 @@ const EmotionText = styled.Text`
 const emotions = ["😀", "😍", "😝", "😎", "🤩", "😡"]
 function Write({ navigation: { goBack } }) {
     const realm = useDB()
-    useEffect(() => { console.log(realm) }, [])
     const [selectedEmotion, setSelectedEmotion] = useState(null)
     const [feelings, setFeelings] = useState("")
     const onChangeText = (text) => setFeelings(text)
@@ -68,10 +67,7 @@ function Write({ navigation: { goBack } }) {
                 emotion: selectedEmotion,
                 message: feelings
             })
-            console.log(feeling)
         })
-        // setSelectedEmotion(null)
-        // setFeelings("")
         goBack()
     }
     return (

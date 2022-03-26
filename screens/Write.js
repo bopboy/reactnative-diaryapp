@@ -3,6 +3,7 @@ import { Alert } from 'react-native'
 import styled from 'styled-components'
 import colors from '../colors'
 import { useDB } from '../context'
+import { AdMobInterstitia, AdMobRewarded } from 'expo-ads-admob'
 
 const View = styled.View`
     background-color: ${colors.bgColor};
@@ -59,7 +60,7 @@ function Write({ navigation: { goBack } }) {
     const [feelings, setFeelings] = useState("")
     const onChangeText = (text) => setFeelings(text)
     const onEmotionPress = (face) => setSelectedEmotion(face)
-    const onSubmit = () => {
+    const onSubmit = async () => {
         if (feelings === "" || selectedEmotion === null) return Alert.alert("Please complete form!!")
         realm.write(() => {
             const feeling = realm.create("Feeling", {
@@ -68,7 +69,13 @@ function Write({ navigation: { goBack } }) {
                 message: feelings
             })
         })
-        goBack()
+        // await AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712');
+        // await AdMobInterstitial.requestAdAsync({ servePersonalizeAds: true })
+        // await AdMobInterstitial.showAdAsync();
+        await AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/8691691433'); // Test ID, Replace with your-admob-unit-id
+        await AdMobRewarded.requestAdAsync();
+        await AdMobRewarded.showAdAsync();
+        // goBack()
     }
     return (
         <View>

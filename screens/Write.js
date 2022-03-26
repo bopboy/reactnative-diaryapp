@@ -62,20 +62,21 @@ function Write({ navigation: { goBack } }) {
     const onEmotionPress = (face) => setSelectedEmotion(face)
     const onSubmit = async () => {
         if (feelings === "" || selectedEmotion === null) return Alert.alert("Please complete form!!")
-        realm.write(() => {
-            const feeling = realm.create("Feeling", {
-                _id: Date.now(),
-                emotion: selectedEmotion,
-                message: feelings
-            })
-        })
-        // await AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712');
-        // await AdMobInterstitial.requestAdAsync({ servePersonalizeAds: true })
-        // await AdMobInterstitial.showAdAsync();
         await AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/8691691433'); // Test ID, Replace with your-admob-unit-id
         await AdMobRewarded.requestAdAsync();
         await AdMobRewarded.showAdAsync();
-        // goBack()
+        // AdMobRewarded.addEventListener("rewardedVideoUserDidEarnReward", () => {
+        AdMobRewarded.addEventListener("rewardedVideoDidDismiss", () => {
+            realm.write(() => {
+                realm.create("Feeling", {
+                    _id: Date.now(),
+                    emotion: selectedEmotion,
+                    message: feelings
+                })
+            })
+            goBack()
+        })
+        // })
     }
     return (
         <View>
